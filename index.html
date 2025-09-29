@@ -858,7 +858,7 @@
         async function fetchAndRenderFeatured(type) {
             const container = containers[type];
             const url = API_URLS[type];
-            const fallbackImage = 'https://i.imgur.com/83p1X1Y.jpeg'; 
+            const fallbackImage = ''; 
 
             try {
                 const response = await fetch(url);
@@ -894,101 +894,90 @@
         }
         
         function renderFeaturedCard(container, item, type, fallbackImage) {
-            
-            // --- 1. LÓGICA DO BOTÃO E LINK ---
-            let linkKey; 
-            if (type === 'noticias') linkKey = 'linkNoticia'; 
-            else if (type === 'eventos') linkKey = 'linkInscricao'; 
-            /* AJUSTE PARA PROJETOS: Garante que 'linkPdf' seja o link do projeto */
-            else linkKey = 'linkPdf'; 
-            
-            const buttonLink = item[linkKey] && item[linkKey].toString().trim() !== '' ? item[linkKey] : '#';
-            const linkAtivo = buttonLink !== '#';
-            
-            let defaultText;
-            if (type === 'noticias') defaultText = 'Ver Notícia';
-            else if (type === 'eventos') defaultText = 'Inscrever-se/Participar';
-            else defaultText = 'Ver Projeto'; // Texto específico para Projetos
+    let linkKey; 
+    if (type === 'noticias') linkKey = 'linkNoticia'; 
+    else if (type === 'eventos') linkKey = 'linkInscricao'; 
+    else linkKey = 'linkPdf'; 
+    
+    const buttonLink = item[linkKey] && item[linkKey].toString().trim() !== '' ? item[linkKey] : '#';
+    const linkAtivo = buttonLink !== '#';
 
-            const buttonText = item.textoBotao && item.textoBotao.toString().trim() !== '' && linkAtivo ? item.textoBotao : 
-                                 (linkAtivo ? defaultText : 'Link em Breve');
+    let defaultText;
+    if (type === 'noticias') defaultText = 'Ver Notícia';
+    else if (type === 'eventos') defaultText = 'Inscrever-se/Participar';
+    else defaultText = 'Ver Projeto';
 
-            const buttonClass = linkAtivo ? 'featured-button' : 'featured-button btn-sem-link';
-            const imageUrl = item.imagemUrl && item.imagemUrl.toString().trim() !== '' ? item.imagemUrl : fallbackImage;
-            
-            // --- 2. Ícones e Rótulos ---
-            let icon, label;
-            if (type === 'noticias') { icon = 'fa-newspaper'; label = 'NOTÍCIA'; }
-            else if (type === 'eventos') { icon = 'fa-calendar-alt'; label = 'EVENTO'; }
-            else { icon = 'fa-flask'; label = 'PROJETO'; }
+    const buttonText = item.textoBotao && item.textoBotao.toString().trim() !== '' && linkAtivo 
+                        ? item.textoBotao 
+                        : (linkAtivo ? defaultText : 'Link em Breve');
 
-            // --- 3. CONTEÚDO DE INFORMAÇÃO ---
-            let infoContent;
-            
-            const rawDate = item.data;
-            let formattedDate = 'Sem Data';
-            if (rawDate) {
-                try {
-                    const dateObj = new Date(rawDate);
-                    formattedDate = dateObj.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                } catch(e) {
-                    formattedDate = rawDate.toString().split('T')[0];
-                }
-            }
+    let buttonClass = linkAtivo ? 'featured-button' : 'featured-button btn-sem-link';
+    let finalLink = buttonLink;
 
+    // 🔥 NOVO: Se evento estiver esgotado, desativa botão
+    let esgotado = false;
+    if (type === 'eventos' && item.status && item.status.toString().toLowerCase().includes('esgotado')) {
+        esgotado = true;
+        buttonClass = 'featured-button btn-sem-link';
+        finalLink = '#';
+    }
 
-            if (type === 'eventos') {
-                infoContent = `
-                    <i class="fa-solid fa-calendar-alt"></i> ${item.data} 
-                    | <i class="fa-solid fa-clock"></i> ${item.hora || 'Sem Hora'}
-                    ${item.local ? ` | <i class="fa-solid fa-location-dot"></i> ${item.local}` : ''}
-                `;
-            } else if (type === 'projetos') {
-                infoContent = `
-                    <i class="fa-solid fa-users"></i> ${item.autores || 'Sem Autor'} 
-                    | <i class="fa-solid fa-check-circle"></i> ${item.status || 'Em Andamento'}
-                `;
-            } else { // Notícias
-                 infoContent = `
-                    <i class="fa-solid fa-calendar-alt"></i> ${item.data} 
-                    ${item.fonte ? ` | <i class="fa-solid fa-globe"></i> ${item.fonte}` : ''}
-                `;
-            }
-            
-            // --- 4. RESUMO ---
-            let resumoTexto = (type === 'eventos' ? item.descricao : item.resumo) || '';
-            if (resumoTexto.toString().trim() === '') {
-                resumoTexto = type === 'projetos' ? 'Descrição do projeto não disponível.' : 'Resumo/descrição não disponível.';
-            }
+    const imageUrl = item.imagemUrl && item.imagemUrl.toString().trim() !== '' ? item.imagemUrl : fallbackImage;
+    
+    let icon, label;
+    if (type === 'noticias') { icon = 'fa-newspaper'; label = 'NOTÍCIA'; }
+    else if (type === 'eventos') { icon = 'fa-calendar-alt'; label = 'EVENTO'; }
+    else { icon = 'fa-flask'; label = 'PROJETO'; }
 
-            // Limita o resumo para manter a estética
-            if (resumoTexto.length > 200) {
-                 resumoTexto = resumoTexto.substring(0, 200) + '...';
-            }
+    let infoContent;
+    if (type === 'eventos') {
+        infoContent = `
+            <i class="fa-solid fa-calendar-alt"></i> ${item.data} 
+            | <i class="fa-solid fa-clock"></i> ${item.hora || 'Sem Hora'}
+            ${item.local ? ` | <i class="fa-solid fa-location-dot"></i> ${item.local}` : ''}
+        `;
+    } else if (type === 'projetos') {
+        infoContent = `
+            <i class="fa-solid fa-users"></i> ${item.autores || 'Sem Autor'} 
+            | <i class="fa-solid fa-check-circle"></i> ${item.status || 'Em Andamento'}
+        `;
+    } else {
+         infoContent = `
+            <i class="fa-solid fa-calendar-alt"></i> ${item.data} 
+            ${item.fonte ? ` | <i class="fa-solid fa-globe"></i> ${item.fonte}` : ''}
+        `;
+    }
 
+    let resumoTexto = (type === 'eventos' ? item.descricao : item.resumo) || '';
+    if (resumoTexto.toString().trim() === '') {
+        resumoTexto = type === 'projetos' ? 'Descrição do projeto não disponível.' : 'Resumo/descrição não disponível.';
+    }
+    if (resumoTexto.length > 200) resumoTexto = resumoTexto.substring(0, 200) + '...';
 
-            const cardHtml = `
-                <div class="featured-card">
-                    <div class="featured-image-container" style="background-image: url('${imageUrl}');">
-                        <span>
-                            <i class="fa-solid ${icon}"></i> ${label} EM DESTAQUE
-                        </span>
+    const cardHtml = `
+        <div class="featured-card">
+            <div class="featured-image-container" style="background-image: url('${imageUrl}');">
+                <span>
+                    <i class="fa-solid ${icon}"></i> ${label} EM DESTAQUE
+                </span>
+                ${esgotado ? `<span style="position:absolute; top:10px; right:10px; background-color:#dc3545; color:white; padding:5px 10px; border-radius:5px; font-weight:bold;">ESGOTADO</span>` : ''}
+            </div>
+            <div class="featured-content">
+                <div>
+                    <div class="featured-info">
+                        ${infoContent}
                     </div>
-                    <div class="featured-content">
-                        <div>
-                            <div class="featured-info">
-                                ${infoContent}
-                            </div>
-                            <h3>${item.titulo}</h3>
-                            <p>${resumoTexto}</p>
-                        </div>
-                        <a href="${buttonLink}" target="_blank" class="${buttonClass}">${buttonText}</a>
-                    </div>
+                    <h3>${item.titulo}</h3>
+                    <p>${resumoTexto}</p>
                 </div>
-            `;
-            
-            container.innerHTML = cardHtml;
-        }
+                <a href="${finalLink}" target="_blank" class="${buttonClass}">${esgotado ? 'Inscrições Esgotadas' : buttonText}</a>
+            </div>
+        </div>
+    `;
+    
+    container.innerHTML = cardHtml;
+}
+
 
         // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', function() {
