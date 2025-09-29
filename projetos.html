@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetBio - Ufpa</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="imagens/iconEx.png"> 
+    
+    <style>
+        /* --- PALETA DE CORES --- */
+        :root {
+            --cor-principal: #5155A6; /* Azul Escuro */
+            --cor-secundaria: #03A64A; /* Verde */
+            --cor-destaque: #1f8ea7; /* Ciano/Água */
+            --cor-fundo-card: #F2F2F2; 
+            --overlay-color: rgba(0, 0, 0, 0.90); 
+        }
+
+        /* --- ESTILOS GLOBAIS E DE RESET --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', Arial, sans-serif; }
+        body { padding-top: 0; background-color: #f4f7f6; line-height: 1.6; color: #333; }
+        
+        /* --- HEADER: Transparente e Flutuante --- */
+        header {
+            background-color: transparent; 
+            padding: 20px 40px; 
+            display: flex; justify-content: space-between; align-items: center;
+            position: absolute; 
+            width: 100%; top: 0; left: 0; z-index: 1000; 
+            box-shadow: none; 
+        }
+        
+        .navegacao { display: flex; gap: 20px; }
+        .logo { display: flex; color: white; }
+        .logo img { height: 40px; width: 40px; display: block; }
+        
+        .botaoI {
+            text-decoration: none; display: inline-block; padding-bottom: 2px;
+            color: white;
+            background-image: linear-gradient(to right, var(--cor-destaque), var(--cor-destaque)); 
+            background-size: 0% 2px; background-repeat: no-repeat;
+            background-position: left bottom; transition: background-size 0.3s ease-out;
+            margin-left: 15px;
+        }
+
+        .botaoI:hover { background-size: 100% 2px; color: #f0f0f0; } 
+        
+        /* Menu responsivo */
+        .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 10px; z-index: 1001; }
+        .bar { display: block; width: 25px; height: 3px; margin: 5px auto; transition: all 0.3s ease-in-out; background-color: white; } 
+        .menu-toggle.open .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .menu-toggle.open .bar:nth-child(2) { opacity: 0; }
+        .menu-toggle.open .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+        /* --- HERO COM IMAGEM DE FUNDO --- */
+        .hero-projetos {
+            background-image: url('imagens/fundoProjetos.jpg'); 
+            background-size: cover;
+            background-position: center center;
+            background-color: var(--cor-principal); 
+            color: white;
+            padding: 120px 20px 60px; 
+            text-align: center;
+            position: relative; 
+            min-height: 350px;
+        }
+        .hero-projetos::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.60); 
+            z-index: 1; 
+        }
+        .hero-projetos h1, .hero-projetos p { position: relative; z-index: 2; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+        .hero-projetos h1 { font-size: 3em; margin-bottom: 10px; }
+        .hero-projetos p { font-size: 1.2em; opacity: 0.9; }
+        
+        /* --- CONTAINER E FERRAMENTAS DE BUSCA/FILTRO --- */
+        .container {
+            width: 90%; max-width: 1200px; 
+            margin: 40px auto; 
+            padding: 20px;
+            background: #ffffff; 
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05); border-radius: 10px;
+        }
+        .tools-area {
+            display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 30px;
+            justify-content: flex-start; align-items: center;
+            padding: 10px; border-bottom: 1px solid #ddd;
+        }
+        .search-box, .filter-box { display: flex; align-items: center; gap: 10px; }
+        .search-box input { width: 250px; }
+        .filter-box select { width: 200px; }
+        .search-box input, .filter-box select {
+            padding: 10px 15px; border: 1px solid #ccc; border-radius: 5px; font-size: 1em;
+        }
+        
+        /* --- CARDS DE PROJETOS --- */
+        #lista-trabalhos {
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 30px;
+            min-height: 200px; 
+        }
+        
+        .projeto-card {
+            background-color: var(--cor-principal); 
+            background-size: cover; background-position: center center;
+            position: relative; border-radius: 8px; overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+            
+            display: flex; flex-direction: column; justify-content: flex-end; 
+            
+            color: white; min-height: 250px; padding: 15px; 
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7); 
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        .projeto-card:hover { transform: translateY(-5px); }
+        
+        .projeto-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(39, 35, 35, 0.95); 
+            z-index: 1;
+        }
+        
+        .projeto-card > * { position: relative; z-index: 2; }
+
+        .card-content { 
+            flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; 
+            color: white; position: relative; z-index: 3; 
+        }
+
+        .card-body {
+            flex-grow: 1; display: flex; flex-direction: column; 
+            justify-content: flex-end;
+            margin-bottom: 10px; 
+            position: relative;
+        }
+        
+        .card-content h2 { font-size: 1.4em; color: white; margin-bottom: 10px; line-height: 1.2; }
+        .card-info-line { font-size: 1em; color: rgba(255, 255, 255, 0.9); margin-bottom: 5px; display: flex; align-items: flex-start; }
+        .card-info-line i { margin-right: 8px; color: var(--cor-destaque); font-size: 1.2em; margin-top: 3px; }
+        
+        /* --- CORREÇÕES PARA O BOTÃO "LER MAIS" --- */
+        .card-body-resumo {
+            flex-grow: 1; 
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        .resumo-text {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95em;
+            margin-top: 5px; 
+            transition: max-height 0.3s ease-in-out, overflow 0.3s linear;
+            max-height: 60px; 
+            margin-bottom: 5px; 
+            position: relative; 
+            z-index: 2; 
+        }
+        
+        .resumo-text.expanded {
+            -webkit-line-clamp: unset;
+            max-height: fit-content; 
+            overflow: visible;
+        }
+        
+        .read-more-toggle {
+            background: none; border: none;
+            color: var(--cor-destaque);
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0;
+            margin-top: 5px;
+            font-size: 0.9em;
+            text-align: left;
+            display: block;
+            text-shadow: none;
+            position: relative;
+            z-index: 3; 
+        }
+        
+        .card-footer { 
+            border-top: 1px solid rgba(255, 255, 255, 0.2); 
+            padding-top: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            gap: 10px; 
+            position: relative;
+            z-index: 10; 
+        }
+        
+        /* --- ESTILOS DE BOTÕES E BADGES --- */
+        .action-button {
+            padding: 10px 15px; text-align: center; text-decoration: none; border-radius: 5px;
+            font-weight: bold; transition: background-color 0.3s; flex-grow: 1; 
+            font-size: 0.95em; border: none; color: white; 
+        }
+        .btn-main { background-color: var(--cor-destaque); }
+        .btn-main:hover { background-color: #04b3db; }
+        .btn-participar { background-color: var(--cor-secundaria); }
+        .btn-participar:hover { background-color: #029443; }
+        .btn-em-breve { 
+            cursor: default; opacity: 0.8; pointer-events: none; 
+            background-color: #9e9e9e !important; color: #f0f0f0 !important;
+        }
+
+        /* --- NOVOS ESTILOS ADICIONADOS --- */
+        .badge-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .classification-badge, .status-badge {
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-shadow: none;
+        }
+        .classification-badge {
+            background-color: #6c757d; /* Cinza para diferenciar */
+        }
+        .status-badge.status-concluido { background-color: var(--cor-secundaria); } /* Verde */
+        .status-badge.status-andamento { background-color: var(--cor-principal); } /* Azul */
+        /* --- FIM DOS NOVOS ESTILOS --- */
+
+
+        /* --- ESTILOS DO FOOTER --- */
+        .site-footer { background-color: #333; color: #bbb; padding: 60px 40px 20px; font-size: 0.9em; }
+        .footer-container { display: flex; justify-content: space-between; align-items: flex-start; max-width: 1200px; margin: 0 auto; flex-wrap: wrap; gap: 30px; }
+        .footer-column { flex: 1; min-width: 200px; margin-bottom: 20px; }
+        .footer-column h3 { color: rgb(255, 255, 255); font-size: 1.2em; margin-bottom: 20px; border-bottom: 2px solid var(--cor-secundaria); padding-bottom: 5px; }
+        .footer-logo { display: flex; align-items: center; margin-bottom: 15px; }
+        .footer-logo img { height: 50px; width: 50px; margin-right: 10px; }
+        .footer-logo span { font-size: 1.5em; font-weight: bold; color: white; }
+        .footer-column a { color: #bbb; text-decoration: none; display: block; margin-bottom: 8px; transition: color 0.2s; }
+        .footer-column a:hover { color: var(--cor-secundaria); }
+        .footer-column ul { list-style: none; padding: 0; }
+        .social-links { display: flex; gap: 15px; margin-top: 20px; }
+        .social-links a { font-size: 1.5em; color: white; transition: color 0.2s; }
+        .social-links a:hover { color: var(--cor-destaque); }
+        .footer-bottom { border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: 40px; padding-top: 20px; text-align: center; font-size: 0.8em; color: #999; }
+        
+        /* --- RESPONSIVIDADE GERAL --- */
+        @media (max-width: 900px) {
+            .tools-area { flex-direction: column; align-items: stretch; }
+            .search-box input, .filter-box select { width: 100%; }
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 15px 20px; }
+            .menu-toggle { display: block; } 
+            .hero-projetos { padding-top: 100px; }
+
+            /* Menu Hamburger */
+            .navegacao { 
+                display: flex; flex-direction: column; position: fixed; top: 0; right: 0;
+                width: 100%; height: 100vh; 
+                background-color: rgba(0, 0, 0, 0.7); 
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                padding-top: 80px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+                transform: translateX(100%); transition: transform 0.3s ease-in-out;
+            }
+            
+            .navegacao.open { transform: translateX(0); }
+            .navegacao .botaoI { margin: 0; padding: 15px 20px; text-align: center; width: 100%; border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: white; }
+
+            /* Footer Responsivo */
+            .footer-container { flex-direction: column; align-items: center; text-align: center; }
+            .footer-column { min-width: 100%; margin-bottom: 30px; }
+            .footer-column ul, .footer-column p { text-align: center; }
+            .footer-logo { justify-content: center; }
+            .social-links { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="imagens/iconEx.png" alt="Logo pet">
+        </div>
+        
+        <button class="menu-toggle" aria-label="Abrir Menu" onclick="toggleMenu()">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <nav class="navegacao">
+            <a href="index.html" class="botaoI">Inicio</a>
+            <a href="Noticias.html" class="botaoI">Noticias</a>
+            <a href="eventos.html" class="botaoI">Eventos</a>
+            <a href="projetos.html" class="botaoI">Projetos</a> 
+        </nav>
+    </header>
+    
+    <section class="hero-projetos">
+        <h1>Projetos e Trabalhos PET</h1>
+        <p>Conheça os resultados alcançados e as pesquisas em andamento.</p>
+    </section>
+    
+    <div class="container">
+        
+        <div class="tools-area">
+            
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass" style="color: var(--cor-principal);"></i>
+                <input type="text" id="searchInput" placeholder="Buscar por título ou autor..." onkeyup="filterTrabalhos()">
+            </div>
+            
+            <div class="filter-box">
+                <i class="fa-solid fa-tags" style="color: var(--cor-principal);"></i>
+                <select id="classificationFilter" onchange="filterTrabalhos()">
+                    <option value="TODOS">Todas as Classificações</option>
+                    <option value="RESUMO">Resumo</option>
+                    <option value="ARTIGO">Artigo</option>
+                    <option value="POSTER">Pôster</option>
+                    </select>
+            </div>
+            
+            <div class="filter-box">
+                <i class="fa-solid fa-filter" style="color: var(--cor-principal);"></i>
+                <select id="statusFilter" onchange="filterTrabalhos()">
+                    <option value="TODOS">Mostrar Todos</option>
+                    <option value="ANDAMENTO">Em Andamento</option>
+                    <option value="CONCLUIDO">Concluídos</option>
+                    </select>
+            </div>
+            
+        </div>
+
+        <section id="trabalhos-dinamicos">
+            <div id="lista-trabalhos">
+                <p class="loading">Carregando projetos...</p>
+            </div>
+        </section>
+    </div>
+    
+    <footer class="site-footer">
+        <div class="footer-container">
+            
+            <div class="footer-column">
+                <div class="footer-logo">
+                    <img src="imagens/iconEx.png" alt="Logo PET">
+                    <span>PET Biologia UFPA</span>
+                </div>
+                <p>
+                    Programa de Educação Tutorial de Biologia da Universidade Federal do Pará.
+                    Desenvolvendo ensino, pesquisa e extensão na Amazônia.
+                </p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/petbiologiaufpa/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/@petbiologiaufpa8405" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h3>Navegação</h3>
+                <ul>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="eventos.html">Eventos</a></li>
+                    <li><a href="projetos.html">Projetos</a></li>
+                    <li><a href="Noticias.html">Noticias</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Fale Conosco</h3>
+                <p><i class="fas fa-envelope"></i> petbioufpa@gmail.com</p>
+                <p><i class="fas fa-map-marker-alt"></i> ICB/UFPA, Campus Guamá</p>
+                <p>Rua Augusto Corrêa, Belém/PA.</p>
+            </div>
+            
+        </div>
+
+        <div class="footer-bottom">
+            &copy; 2024 PET Biologia UFPA. Todos os direitos reservados.
+            <br>
+            Desenvolvido por: petbiologia
+        </div>
+    </footer>
+    
+    <script>
+        const SHEETY_API_URL = 'https://script.google.com/macros/s/AKfycbw4NG7wVPAqV-epuYjdZ7FtDz6qP16MEQr2UV5NjF_KkoT_yad40eEKT8bEm6y51dqE/exec'; 
+        
+        let todosOsProjetos = []; 
+        
+        const listaTrabalhosDiv = document.getElementById('lista-trabalhos');
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const classificationFilter = document.getElementById('classificationFilter'); 
+
+        document.addEventListener('DOMContentLoaded', fetchProjetos);
+        
+        // --- FUNÇÃO DE BUSCA DE DADOS ---
+        async function fetchProjetos() {
+            try {
+                const response = await fetch(SHEETY_API_URL);
+                if (!response.ok) throw new Error(`Erro: ${response.status}`);
+                
+                const data = await response.json();
+                
+                todosOsProjetos = Array.isArray(data) ? data : (data.página1 || data.projetos || []); 
+                
+                filterTrabalhos(); 
+
+            } catch (error) {
+                console.error('Erro ao buscar projetos:', error);
+                listaTrabalhosDiv.innerHTML = `<p class="loading" style="color:var(--cor-principal);">
+                    Não foi possível carregar os projetos. Verifique a URL da API ou a conexão.
+                </p>`;
+            }
+        }
+        
+        // --- FUNÇÃO DE FILTRAGEM E BUSCA ---
+        function filterTrabalhos() {
+            const termoBusca = searchInput.value.toLowerCase().trim();
+            const statusSelecionado = statusFilter.value;
+            const classificacaoSelecionada = classificationFilter.value; 
+
+            const projetosFiltrados = todosOsProjetos.filter(projeto => {
+                
+                const status = (projeto.status || '').toUpperCase().trim();
+                const statusAtende = statusSelecionado === 'TODOS' || status === statusSelecionado;
+                if (!statusAtende) return false;
+                
+                const classificacao = (projeto.tipo || '').toUpperCase().trim(); 
+                const classificacaoAtende = classificacaoSelecionada === 'TODOS' || classificacao === classificacaoSelecionada;
+                if (!classificacaoAtende) return false;
+
+                if (termoBusca === '') return true; 
+
+                const tituloMatch = projeto.titulo && projeto.titulo.toLowerCase().includes(termoBusca);
+                const autoresMatch = projeto.autores && projeto.autores.toLowerCase().includes(termoBusca);
+                
+                return tituloMatch || autoresMatch;
+            });
+
+            renderTrabalhos(projetosFiltrados);
+        }
+
+        // --- FUNÇÃO DE RENDERIZAÇÃO DOS CARDS ---
+        function renderTrabalhos(projetos) {
+            listaTrabalhosDiv.innerHTML = ''; 
+
+            if (projetos.length === 0) {
+                listaTrabalhosDiv.innerHTML = '<p class="no-results">Nenhum projeto encontrado com os filtros aplicados.</p>';
+                return;
+            }
+
+            projetos.forEach((projeto, index) => {
+                const card = document.createElement('div');
+                card.classList.add('projeto-card');
+                
+                if (projeto.imagemUrl) {
+                    card.style.backgroundImage = `url('${projeto.imagemUrl}')`;
+                } else {
+                    card.style.backgroundColor = 'var(--cor-principal)'; 
+                }
+                
+                const statusUpper = (projeto.status || '').toUpperCase().trim();
+                const classificacaoUpper = (projeto.tipo || '').toUpperCase().trim(); 
+                
+                // --- LÓGICA MODIFICADA PARA CRIAR AS ETIQUETAS ---
+                const classificationBadge = classificacaoUpper ? 
+                    `<span class="classification-badge">${classificacaoUpper}</span>` : '';
+                
+                let statusBadgeHtml = '';
+                if (statusUpper === 'CONCLUIDO') {
+                    statusBadgeHtml = `<span class="status-badge status-concluido">Concluído</span>`;
+                } else if (statusUpper === 'ANDAMENTO') {
+                    statusBadgeHtml = `<span class="status-badge status-andamento">Em Andamento</span>`;
+                }
+                // --- FIM DA LÓGICA MODIFICADA ---
+                
+                let corpoProjeto = '';
+                let footerProjeto = '';
+                
+                const linkPrincipalAtivo = projeto.linkPdf && projeto.linkPdf.trim() !== '';
+                const linkPrincipal = linkPrincipalAtivo ? projeto.linkPdf : '#';
+                
+                let textoPrincipalPadrao = 'Ver Projeto';
+                if (statusUpper === 'CONCLUIDO') textoPrincipalPadrao = 'Baixar PDF';
+                
+                const classePrincipal = linkPrincipalAtivo ? 'action-button btn-main' : 'action-button btn-em-breve';
+                
+                if (statusUpper === 'CONCLUIDO') {
+                    const resumo = projeto.resumo || 'Resumo do trabalho final não disponível.';
+                    const resumoCompletoId = `resumo-completo-${index}`; 
+                    const isLongResumo = resumo.length > 100; 
+                    corpoProjeto = `
+                        <div class="card-body-resumo">
+                            <p class="resumo-text" id="${resumoCompletoId}">${resumo}</p>
+                            ${isLongResumo ? `<button class="read-more-toggle" data-target="${resumoCompletoId}" onclick="toggleReadMore(this)">Ler Mais</button>` : ''}
+                        </div>`;
+                    footerProjeto = `<a href="${linkPrincipal}" ${linkPrincipalAtivo ? 'target="_blank"' : ''} class="${classePrincipal}">
+                                            <i class="fa-solid fa-download"></i> ${textoPrincipalPadrao}
+                                        </a>`;
+                } else if (statusUpper === 'ANDAMENTO') {
+                    const objetivo = projeto.objetivo || 'Objetivo do projeto em andamento não listado.';
+                    corpoProjeto = `<p class="card-info-line"><i class="fa-solid fa-bullseye"></i>${objetivo}</p>`;
+                    const linkParticiparAtivo = projeto.linkPequisa && projeto.linkPequisa.trim() !== '';
+                    let botaoParticiparHtml = '';
+                    if (linkParticiparAtivo) {
+                        const linkParticipar = projeto.linkPequisa;
+                        const textoParticiparPadrao = 'Participar';
+                        const classeParticipar = 'action-button btn-participar';
+                        botaoParticiparHtml = `<a href="${linkParticipar}" target="_blank" class="${classeParticipar}">${textoParticiparPadrao}</a>`;
+                    }
+                    footerProjeto = `<a href="${linkPrincipal}" ${linkPrincipalAtivo ? 'target="_blank"' : ''} class="${classePrincipal}">${textoPrincipalPadrao}</a>${botaoParticiparHtml}`;
+                } else {
+                    corpoProjeto = `<p class="card-info-line">Status: ${statusUpper || 'Não definido'}.</p>`;
+                    footerProjeto = `<span class="action-button btn-em-breve">Informação Pendente</span>`;
+                }
+
+                
+                card.innerHTML = `
+                    <div class="card-content">
+                        <div class="badge-container">
+                            ${classificationBadge}
+                            ${statusBadgeHtml}
+                        </div>
+                        <div class="card-body">
+                            <h2>${projeto.titulo}</h2>
+                            <p class="card-info-line">
+                                <i class="fa-solid fa-users"></i>
+                                ${projeto.autores || 'Autores não listados.'}
+                            </p>
+                            ${corpoProjeto}
+                        </div>
+                        <div class="card-footer">
+                            ${footerProjeto}
+                        </div>
+                    </div>
+                `;
+                listaTrabalhosDiv.appendChild(card);
+            });
+        }
+        
+        // --- FUNÇÃO PARA EXPANDIR/REDUZIR O TEXTO ---
+        function toggleReadMore(button) {
+            const targetId = button.getAttribute('data-target');
+            const resumoElement = document.getElementById(targetId);
+            
+            if (resumoElement.classList.contains('expanded')) {
+                resumoElement.classList.remove('expanded');
+                button.textContent = 'Ler Mais';
+            } else {
+                resumoElement.classList.add('expanded');
+                button.textContent = 'Ver Menos';
+            }
+        }
+
+        // --- FUNÇÃO DE TOOGLE DO MENU HAMBURGUER ---
+        function toggleMenu() {
+            const nav = document.querySelector('.navegacao');
+            const toggle = document.querySelector('.menu-toggle');
+            nav.classList.toggle('open');
+            toggle.classList.toggle('open');
+        }
+        
+    </script>
+</body>
+</html>

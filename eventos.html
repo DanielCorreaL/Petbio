@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetBio - Ufpa</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="imagens/iconEx.png">
+    <style>
+        /* --- PALETA DE CORES --- */
+        :root {
+            --cor-principal: #5155A6; 
+            --cor-secundaria: #03A64A; 
+            --cor-destaque: #05C7F2; 
+            --cor-fundo-card: #F2F2F2; 
+            --overlay-color: rgba(0, 0, 0, 0.6); 
+        }
+
+        /* --- ESTILOS GLOBAIS E DE RESET --- */
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            padding-top: 0; 
+            background-color: #f4f7f6; line-height: 1.6; color: #333;
+        }
+        
+        /* HEADER: Transparente e Flutuante */
+        header {
+            background-color: transparent; 
+            padding: 20px 40px; 
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            
+            position: absolute; 
+            width: 100%; top: 0; left: 0; z-index: 1000; 
+            box-shadow: none;
+        }
+        
+        .navegacao { display: flex; gap: 20px; }
+        .logo { display: flex; }
+        .logo, .botaoI, .menu-toggle .bar { color: white; } 
+        
+        .logo img { height: 40px; width: 40px; display: block; }
+
+        .botaoI {
+            text-decoration: none; display: inline-block; padding-bottom: 2px;
+            background-image: linear-gradient(to right, var(--cor-destaque), var(--cor-destaque)); 
+            background-size: 0% 2px; background-repeat: no-repeat;
+            background-position: left bottom; transition: background-size 0.3s ease-out;
+            margin-left: 15px;
+        }
+
+        .botaoI:hover { background-size: 100% 2px; color: #f0f0f0; } 
+
+        /* --- MENU HAMBÚRGUER --- */
+        .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 10px; z-index: 1001; }
+        .bar { display: block; width: 25px; height: 3px; margin: 5px auto; transition: all 0.3s ease-in-out; background-color: white; } 
+        .menu-toggle.open .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .menu-toggle.open .bar:nth-child(2) { opacity: 0; }
+        .menu-toggle.open .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        
+        /* --- HERO SECTION (ESTILO DESKTOP/PADRÃO) --- */
+        .hero-evento-destaque {
+            background-image: linear-gradient(135deg, var(--cor-principal), var(--cor-secundaria)); 
+            background-size: cover; 
+            background-position: center center; 
+            position: relative; 
+            height: 60vh; 
+            min-height: 450px;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            
+            justify-content: center; 
+            
+            color: white; 
+            text-align: center;
+            
+            /* [CORREÇÃO PARA TABLET/DESKTOP] Aumenta o padding superior para garantir que o conteúdo fique abaixo do header fixo. */
+            padding: 150px 20px 120px 20px; 
+            overflow: hidden;
+        }
+
+        .hero-evento-destaque::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--overlay-color); 
+            z-index: 1; 
+        }
+        
+        .hero-evento-destaque::after { 
+            content: 'PET';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20vw; 
+            color: rgba(255, 255, 255, 0.08); 
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 2; 
+        }
+
+        .hero-evento-destaque h1,
+        .hero-evento-destaque .hero-info-destaque,
+        .hero-evento-destaque .hero-buttons,
+        .hero-evento-destaque .hero-description,
+        #hero-tags-container { 
+            position: relative; 
+            z-index: 3;
+        }
+
+        .hero-evento-destaque h1 {
+            /* Título padrão para desktops grandes */
+            font-size: 3em; margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+        }
+        
+        .hero-description {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            max-width: 800px;
+            padding: 0 20px; 
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-info-destaque {
+            display: flex; gap: 40px; margin-bottom: 30px; font-size: 1.1em;
+            flex-wrap: wrap; 
+            justify-content: center;
+        }
+
+        .hero-info-destaque div { 
+            display: flex; flex-direction: column; align-items: center; 
+        }
+
+        .hero-info-destaque i {
+            font-size: 1.8em; 
+            margin-bottom: 5px;
+            color: var(--cor-destaque); 
+        }
+        
+        .hero-buttons {
+            display: flex; gap: 15px; margin-top: 20px;
+        }
+
+        .hero-button {
+            padding: 12px 30px; border: none; border-radius: 5px;
+            font-size: 1.0em; font-weight: bold; text-transform: uppercase;
+            text-decoration: none; transition: background-color 0.3s; color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .btn-principal { background-color: var(--cor-destaque); }
+        .btn-principal:hover { background-color: #04b3db; }
+        .btn-secundario { background-color: var(--cor-secundaria); }
+        .btn-secundario:hover { background-color: #029443; }
+
+        /* --- Estilos da Lista de Cards --- */
+        .container {
+            width: 90%; max-width: 1200px; 
+            margin: 40px auto; 
+            padding: 20px;
+            background: #ffffff; 
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05); border-radius: 10px;
+        }
+
+        .section-title {
+            color: var(--cor-principal); text-align: center;
+            margin-bottom: 30px; font-size: 2em;
+        }
+
+        #lista-eventos {
+            display: flex; 
+            flex-direction: column; /* Força o empilhamento vertical */
+            gap: 40px; /* Aumenta o espaçamento entre os cards */
+        }
+        
+        .evento-card {
+            background-color: var(--cor-principal); 
+            background-size: cover;
+            background-position: center center;
+            position: relative; 
+            border-radius: 8px; overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+            
+            display: flex; 
+            flex-direction: column; 
+            justify-content: flex-end; 
+            
+            color: white; 
+            min-height: 250px; 
+            padding: 15px; 
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7); 
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .evento-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .evento-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--overlay-color); 
+            z-index: 1;
+        }
+        
+        .evento-card > * { 
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-content { 
+            padding: 0; 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: flex-end; 
+            color: white;
+        }
+        
+        .card-content h2 { 
+            font-size: 1.4em; 
+            color: white; 
+            margin-bottom: 10px; 
+            line-height: 1.2; 
+        }
+
+        .card-description-wrapper {
+            margin-top: 10px; 
+            margin-bottom: 10px;
+            position: relative;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.4;
+            font-size: 1.05em;
+        }
+
+        .card-description {
+            /* Altura inicial para cerca de 3 linhas de texto (4.2em = 3 * 1.4 line-height) */
+            max-height: 4.2em; 
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+            display: block;
+        }
+
+        .card-description.expanded {
+            max-height: 500px; /* Valor alto para mostrar todo o conteúdo */
+            overflow: visible;
+        }
+
+        /* Efeito de fade quando o texto está truncado */
+        .card-description:not(.expanded)::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px; 
+            /* Gradiente que vai do transparente para a cor principal (fundo do card) */
+            background: linear-gradient(to top, var(--cor-principal) 0%, rgba(81, 85, 166, 0) 100%);
+        }
+
+        .read-more-button {
+            background: none;
+            border: none;
+            color: var(--cor-destaque); 
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0;
+            margin-top: 5px;
+            display: block; 
+            text-decoration: underline;
+            transition: color 0.2s;
+            font-size: 0.95em;
+            position: relative; 
+            z-index: 10;
+            text-shadow: none; 
+        }
+        .read-more-button:hover {
+            color: white;
+        }
+        
+        /* Estilo para container de tags */
+        .card-tags {
+            margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        /* Estilo para a tag individual */
+        .tag {
+            background-color: var(--cor-destaque);
+            color: black;
+            font-size: 0.75em;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-shadow: none; 
+        }
+
+        /* Estilo específico para as tags no HERO SECTION */
+        #hero-tags-container {
+            margin-bottom: 10px; 
+            display: flex; 
+            justify-content: center; 
+            flex-wrap: wrap;
+        }
+        
+        #hero-tags-container .tag {
+             background-color: var(--cor-destaque);
+             color: black;
+             font-size: 0.9em; 
+             padding: 5px 10px;
+        }
+        
+        /* Estilo para as linhas de detalhe (Data, Hora, Local) */
+        .detail-line { 
+            font-size: 1em; 
+            color: rgba(255, 255, 255, 0.9); 
+            margin-bottom: 5px; 
+            display: flex; 
+            align-items: center; 
+        }
+        .detail-line i { 
+            margin-right: 8px; 
+            color: var(--cor-destaque); 
+            font-size: 1.2em; 
+        }
+        
+        .card-footer { 
+            border-top: 1px solid rgba(255, 255, 255, 0.2); 
+            padding-top: 15px; 
+            display: flex; 
+            justify-content: center; 
+        }
+        
+        .action-button {
+            display: block; width: 100%; 
+            background-color: var(--cor-destaque); color: white;
+            padding: 10px 15px; text-align: center; text-decoration: none; border-radius: 5px;
+            font-weight: bold; transition: background-color 0.3s; border: none;
+        }
+        
+        .action-button:hover { background-color: #04b3db; }
+        
+        /* --- ESTILOS PARA OS BOTÕES DE STATUS --- */
+        .btn-esgotado {
+            background-color: #f44336 !important; 
+            cursor: not-allowed;
+            opacity: 0.8;
+            pointer-events: none; 
+        }
+        .btn-esgotado:hover {
+            background-color: #f44336;
+        }
+        .btn-em-breve {
+            background-color: #9e9e9e !important; 
+            cursor: default;
+            opacity: 0.9;
+            pointer-events: none; 
+        }
+        .btn-em-breve:hover {
+            background-color: #9e9e9e;
+        }
+        /* ------------------------------------------- */
+
+        .loading { text-align: center; grid-column: 1 / -1; padding: 20px; }
+        
+        /* [NOVA MEDIA QUERY] AJUSTE ESPECÍFICO PARA TABLETS (769px a 992px) */
+        @media (min-width: 769px) and (max-width: 992px) {
+            .hero-evento-destaque h1 {
+                /* Reduz ainda mais o título para que não quebre em 2 linhas feias no tablet */
+                font-size: 2.5em; 
+            }
+            .hero-info-destaque {
+                /* Garante centralização completa no tablet */
+                justify-content: center;
+                text-align: center;
+            }
+            .hero-buttons {
+                 /* Garante centralização completa no tablet */
+                 justify-content: center;
+            }
+        }
+
+
+        /* --- RESPONSIVIDADE (MOBILE: max-width: 768px) --- */
+        /* MANTIDO INTACTO */
+        @media (max-width: 768px) {
+            header { padding: 15px 20px; }
+            .menu-toggle { display: block; } 
+            
+            .hero-evento-destaque { 
+                justify-content: space-between; 
+                padding-top: 100px; 
+                padding-bottom: 40px; 
+                height: auto; 
+                min-height: 500px; 
+            }
+
+            .hero-evento-destaque h1 { 
+                font-size: 3em; 
+            }
+            .hero-info-destaque { 
+                flex-direction: column; 
+                gap: 15px; 
+                font-size: 1em;
+                margin-top: 20px; 
+                margin-bottom: 20px; 
+            }
+            .hero-buttons { 
+                flex-direction: column; 
+                width: 100%; 
+                margin-top: 20px; 
+            }
+            .hero-button { 
+                width: 100%; 
+                font-size: 1.1em; 
+                padding: 12px 15px; 
+            }
+
+            .navegacao {
+                display: flex; flex-direction: column; position: fixed; top: 0; right: 0;
+                width: 100%; height: 100vh; 
+                background-color: rgba(0, 0, 0, 0.7); 
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                
+                padding-top: 80px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+                transform: translateX(100%); transition: transform 0.3s ease-in-out;
+            }
+
+            .navegacao.open { transform: translateX(0); }
+            
+            .navegacao .botaoI {
+                margin: 0; padding: 15px 20px; text-align: center; width: 100%;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: white; 
+            }
+        }
+        
+        /* --- ESTILOS DO FOOTER --- */
+        .site-footer {
+            background-color: #333; 
+            color: #bbb; 
+            padding: 60px 40px 20px;
+            font-size: 0.9em;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .footer-column {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 20px;
+        }
+
+        .footer-column h3 {
+            color: rgb(255, 255, 255); 
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--cor-secundaria); 
+            padding-bottom: 5px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .footer-logo img {
+            height: 50px;
+            width: 50px;
+            margin-right: 10px;
+        }
+
+        .footer-logo span {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+        }
+
+        .footer-column p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .footer-column a {
+            color: #bbb; 
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+            transition: color 0.2s;
+        }
+
+        .footer-column a:hover {
+            color: var(--cor-secundaria); 
+        }
+
+        .footer-column ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        /* ÍCONES SOCIAIS */
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            font-size: 1.5em;
+            color: white;
+            transition: color 0.2s;
+        }
+
+        .social-links a:hover {
+            color: white;
+        }
+
+        /* COPYRIGHT */
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 40px;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 0.8em;
+            color: #999; 
+        }
+        
+        /* --- MEDIA QUERY PARA RESPONSIVIDADE DO FOOTER --- */
+        @media (max-width: 768px) {
+            .footer-container {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .footer-column {
+                min-width: 100%;
+                margin-bottom: 30px;
+            }
+
+            .footer-column ul, .footer-column p {
+                text-align: center;
+            }
+            
+            .footer-logo {
+                justify-content: center;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="imagens/iconEx.png" alt="Logo pet">
+        </div>
+        
+        <button class="menu-toggle" aria-label="Abrir Menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <nav class="navegacao">
+            <a href="index.html" class="botaoI">Inicio</a>
+            <a href="Noticias.html" class="botaoI">Noticias</a>
+            <a href="eventos.html" class="botaoI">Eventos</a>
+            <a href="projetos.html" class="botaoI">Projetos</a> 
+        </nav>
+    </header>
+    
+    <section class="hero-evento-destaque" id="hero-section">
+        <div id="hero-tags-container" class="card-tags">
+            </div>
+        
+        <h1 id="hero-titulo-evento">Carregando Destaque...</h1>
+        
+        <p id="hero-descricao-destaque" class="hero-description"></p> 
+        
+        <div class="hero-info-destaque">
+            <div id="hero-data-container">
+                <i class="fa-solid fa-calendar-alt"></i>
+                <span id="hero-data">...</span>
+            </div>
+             <div id="hero-local-container">
+                <i class="fa-solid fa-location-dot"></i>
+                <span id="hero-local">...</span>
+            </div>
+        </div>
+
+        <div class="hero-buttons">
+            <a href="#proximos-eventos" class="hero-button btn-principal">Ver mais Eventos</a>
+            <a id="hero-link-inscricao" href="#" class="hero-button btn-secundario">Inscreva-se Agora</a>
+        </div>
+    </section>
+    
+    <div class="container">
+        
+        <h2 class="section-title" id="proximos-eventos">Próximos Eventos e Atividades</h2>
+
+        <section id="eventos-dinamicos">
+            <div id="lista-eventos">
+                <p class="loading">Carregando eventos...</p>
+            </div>
+        </section>
+    </div>
+    <footer class="site-footer">
+        <div class="footer-container">
+            
+            <div class="footer-column">
+                <div class="footer-logo">
+                    <img src="imagens/iconEx.png" alt="Logo PET">
+                    <span>PET Biologia UFPA</span>
+                </div>
+                <p>
+                    Programa de Educação Tutorial de Biologia da Universidade Federal do Pará.
+                    Desenvolvendo ensino, pesquisa e extensão na Amazônia.
+                </p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/petbiologiaufpa/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/@petbiologiaufpa8405" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h3>Navegação</h3>
+                <ul>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="eventos.html">Eventos</a></li>
+                    <li><a href="projetos.html">Projetos</a></li>
+                    <li><a href="Noticias.html">Noticias</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Fale Conosco</h3>
+                <p><i class="fas fa-envelope"></i> petbioufpa@gmail.com</p>
+                <p><i class="fas fa-map-marker-alt"></i> ICB/UFPA, Campus Guamá</p>
+                <p>Rua Augusto Corrêa, Belém/PA.</p>
+            </div>
+            
+        </div>
+
+        <div class="footer-bottom">
+            &copy; 2024 PET Biologia UFPA. Todos os direitos reservados.
+            <br>
+            Desenvolvido por: petbiologia
+        </div>
+    </footer>
+    <script>
+        // *** 1. IMPORTANTE: SUBSTITUA ESTA URL PELA SUA URL REAL DO Google Apps Script ***
+        const SHEETY_API_URL = 'https://script.google.com/macros/s/AKfycbxN6WVtZOu6qspcmluK0XAYTAtd6e82tlJpPvzkoDZvqU-THCDUK4PtsPMluJ4Wsf2tHg/exec'; 
+        
+        // Pra ter o Ler mais
+        const MAX_DESC_LENGTH = 150; 
+        // Referências aos elementos do DOM
+        const heroSection = document.getElementById('hero-section');
+        const listaEventosDiv = document.getElementById('lista-eventos');
+        const heroTituloH1 = document.getElementById('hero-titulo-evento');
+        const heroDataSpan = document.getElementById('hero-data');
+        const heroLocalSpan = document.getElementById('hero-local');
+        const heroLink = document.getElementById('hero-link-inscricao');
+        
+        // Referências para descrição e tags (RE-ADICIONADO)
+        const heroDescricaoP = document.getElementById('hero-descricao-destaque'); 
+        const heroTagsContainer = document.getElementById('hero-tags-container'); 
+
+        // Referências para controle de exibição
+        const heroLocalContainer = document.getElementById('hero-local-container'); 
+        const heroDataContainer = document.getElementById('hero-data-container');
+        const heroButtonsDiv = document.querySelector('.hero-buttons'); 
+        const heroDataIcon = document.querySelector('#hero-data-container i');
+
+
+        document.addEventListener('DOMContentLoaded', fetchEventos);
+
+        async function fetchEventos() {
+            listaEventosDiv.innerHTML = '<p class="loading">Carregando eventos...</p>'; 
+
+            try {
+                const response = await fetch(SHEETY_API_URL);
+                if (!response.ok) throw new Error(`Erro: ${response.status}`);
+                
+                const data = await response.json();
+                
+                // Lendo a chave "página1" que está no retorno da sua API.
+                const eventos = data.página1 || []; 
+                
+                if (!Array.isArray(eventos)) { 
+                    throw new Error("Resposta da API inválida. Não foi encontrado um array em 'página1'.");
+                }
+                
+                // 1. LÓGICA DO DESTAQUE (HERO SECTION)
+                const destaque = eventos.find(e => e.Destaque && e.Destaque.toUpperCase() === 'SIM');
+
+                if (destaque) {
+                    
+                    // MOSTRA TODOS OS ELEMENTOS
+                    if(heroLocalContainer) heroLocalContainer.style.display = 'flex'; 
+                    if(heroDataContainer) heroDataContainer.style.display = 'flex';
+                    if(heroButtonsDiv) heroButtonsDiv.style.display = 'flex'; 
+                    if(heroDescricaoP) heroDescricaoP.style.display = 'block';
+
+                    // --- ATUALIZAÇÃO DO HERO (Data e Hora) ---
+                    let heroDataText = destaque.DataHero || destaque.data || 'Data Indefinida';
+                    
+                    if (destaque.hora) {
+                        heroDataText += ` | ${destaque.hora}`; 
+                    }
+                    
+                    heroTituloH1.textContent = destaque.titulo || "Evento em Destaque"; 
+                    heroDataSpan.textContent = heroDataText; 
+                    heroLocalSpan.textContent = destaque.LocalHero || destaque.local;
+                    
+                    // Popula a descrição
+                    heroDescricaoP.textContent = destaque.descricao || '';
+                    
+                    // --- LÓGICA DAS TAGS NO DESTAQUE (HERO) ---
+                    if (heroTagsContainer) {
+                        heroTagsContainer.innerHTML = ''; // Limpa antes de preencher
+                        if (destaque.tags) {
+                            const tagsArray = destaque.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+                            if (tagsArray.length > 0) {
+                                heroTagsContainer.classList.add('card-tags'); 
+                                heroTagsContainer.innerHTML = tagsArray.map(tag => `<span class="tag">${tag}</span>`).join(' ');
+                            }
+                        }
+                    }
+                    // -------------------------------------------
+
+                    heroLink.href = destaque.linkInscricao || '#';
+                    
+                    heroLink.textContent = `Inscreva-se Agora`; 
+                    heroLink.classList.remove('btn-esgotado', 'btn-em-breve', 'btn-secundario');
+                    
+                    const heroStatus = destaque.status ? destaque.status.toUpperCase() : '';
+                    if (heroStatus === 'ESGOTADO' || heroStatus === 'CHEIO') {
+                        heroLink.textContent = "Esgotado";
+                        heroLink.classList.add('btn-esgotado');
+                    } else if (!destaque.linkInscricao || destaque.linkInscricao === '#' || heroStatus === 'EM BREVE') {
+                        heroLink.textContent = "Em Breve";
+                        heroLink.classList.add('btn-em-breve');
+                    } else {
+                        heroLink.classList.add('btn-secundario');
+                    }
+
+                    if (destaque.imagemUrl) {
+                        heroSection.style.backgroundImage = `url('${destaque.imagemUrl}')`;
+                    } else {
+                        heroSection.style.backgroundImage = `linear-gradient(135deg, var(--cor-principal), var(--cor-secundaria))`;
+                    }
+
+                } else {
+                    // Texto padrão se não houver destaque
+                    heroTituloH1.textContent = "AGENDA DE EVENTOS"; 
+                    heroDataSpan.textContent = "Confira abaixo os próximos eventos!"; 
+                    heroLocalSpan.textContent = "";
+                    
+                    // ESCONDE os elementos de ícones/info e a descrição/tags
+                    if(heroLocalContainer) heroLocalContainer.style.display = 'none'; 
+                    if(heroDataContainer) heroDataContainer.style.display = 'none';
+                    if(heroButtonsDiv) heroButtonsDiv.style.display = 'none';
+                    if(heroDescricaoP) heroDescricaoP.style.display = 'none';
+                    if(heroTagsContainer) heroTagsContainer.innerHTML = ''; 
+
+                    // Reseta o fundo
+                    heroSection.style.backgroundImage = `linear-gradient(135deg, var(--cor-principal), var(--cor-secundaria))`;
+                }
+                
+                // 2. RENDERIZAR A LISTA DE CARDS
+                const eventosParaLista = eventos.filter(e => !e.Destaque || e.Destaque.toUpperCase() !== 'SIM');
+                renderEventos(eventosParaLista);
+
+            } catch (error) {
+                console.error('Erro ao buscar eventos:', error);
+                heroTituloH1.textContent = "Erro de Conexão";
+                heroDataSpan.textContent = "Verifique o console para detalhes.";
+                heroLocalSpan.textContent = "";
+                if(heroLocalContainer) heroLocalContainer.style.display = 'none'; 
+                if(heroDataContainer) heroDataContainer.style.display = 'none';
+                if(heroButtonsDiv) heroButtonsDiv.style.display = 'none'; 
+                if(heroDescricaoP) heroDescricaoP.style.display = 'none';
+                if(heroTagsContainer) heroTagsContainer.innerHTML = ''; 
+                
+                listaEventosDiv.innerHTML = `<p class="loading" style="color:var(--cor-principal);">
+                    Não foi possível carregar eventos. Verifique o console ou a URL da API.
+                </p>`;
+            }
+        }
+
+        function renderEventos(eventos) {
+            listaEventosDiv.innerHTML = ''; 
+
+            if (eventos.length === 0) {
+                listaEventosDiv.innerHTML = '<p class="loading">Nenhum evento agendado no momento. Fique ligado!</p>';
+                return;
+            }
+
+            eventos.forEach(evento => {
+                const card = document.createElement('div');
+                card.classList.add('evento-card');
+                
+                // --- LÓGICA DO BOTÃO DO CARD ---
+                let buttonText = "Inscreva-se"; 
+                let buttonLink = evento.linkInscricao || '#';
+                let buttonClass = 'action-button';
+                
+                const status = evento.status ? evento.status.toUpperCase() : '';
+
+                if (status === 'ESGOTADO' || status === 'CHEIO') {
+                    buttonText = "Esgotado";
+                    buttonLink = "#"; 
+                    buttonClass = 'action-button btn-esgotado';
+                } 
+                else if (!evento.linkInscricao || evento.linkInscricao === '#' || status === 'EM BREVE') {
+                    buttonText = "Em Breve";
+                    buttonLink = "#"; 
+                    buttonClass = 'action-button btn-em-breve';
+                } 
+                
+                // Define a imagem de fundo do card
+                if (evento.imagemUrl) {
+                    card.style.backgroundImage = `url('${evento.imagemUrl}')`;
+                } else {
+                    card.style.backgroundColor = 'var(--cor-principal)'; 
+                }
+
+                // 1. Processar Tags
+                let tagsHtml = '';
+                if (evento.tags) {
+                    const tagsArray = evento.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+                    if (tagsArray.length > 0) {
+                        tagsHtml = `<div class="card-tags">
+                            ${tagsArray.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>`;
+                    }
+                }
+
+                // 2. Processar Descrição
+                const descricaoHtml = evento.descricao
+                    ? `<p class="card-description">${evento.descricao}</p>`
+                    : '';
+
+                // Geração da linha de Data
+                const dataHtml = evento.data 
+                    ? `<div class="detail-line">
+                           <i class="fa-solid fa-calendar-alt"></i>${evento.data}
+                       </div>`
+                    : '';
+
+                // Geração da linha de Hora com ícone de relógio
+                const horaHtml = evento.hora 
+                    ? `<div class="detail-line">
+                           <i class="fa-solid fa-clock"></i>${evento.hora}
+                       </div>`
+                    : '';
+
+                const localHtml = evento.local 
+                    ? `<div class="detail-line"><i class="fa-solid fa-location-dot"></i>${evento.local}</div>`
+                    : '';
+
+                card.innerHTML = `
+                    <div class="card-content">
+                        ${tagsHtml}
+                        <h2>${evento.titulo}</h2>
+                        
+                        ${descricaoHtml}
+                        
+                        ${dataHtml} ${horaHtml} ${localHtml}
+                        
+                        <div class="card-footer">
+                            <a href="${buttonLink}" target="_blank" class="${buttonClass}">${buttonText}</a>
+                        </div>
+                    </div>
+                `;
+                listaEventosDiv.appendChild(card);
+            });
+        }
+        
+        // --- CÓDIGO DO MENU RESPONSIVO (MANTIDO) ---
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navegacao = document.querySelector('.navegacao');
+        const navLinks = document.querySelectorAll('.navegacao .botaoI');
+
+        if (menuToggle && navegacao) {
+            
+            function toggleMenu() {
+                menuToggle.classList.toggle('open');
+                navegacao.classList.toggle('open');
+            }
+
+            menuToggle.addEventListener('click', toggleMenu);
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (navegacao.classList.contains('open')) {
+                        toggleMenu();
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

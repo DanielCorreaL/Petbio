@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetBio - Ufpa</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="imagens/iconEx.png">
+    <style>
+        /* --- PALETA DE CORES --- */
+        :root {
+            --cor-principal: #5155A6; /* Roxo principal */
+            --cor-secundaria: #03A64A; /* Verde destaque */
+            --cor-destaque: #1b87a0; /* Ciano/Azul claro */
+            --cor-fundo-card: #F2F2F2; /* Cinza claro para cards e seções */
+            --cor-texto-claro: #F9F9F9;
+            --cor-fundo-pesquisa: #017F3B; /* Verde Escuro */
+            
+            /* --url-hero-background será definido dinamicamente pelo JavaScript -- */
+        }
+
+        /* --- ESTILOS GLOBAIS E DE RESET --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body { padding-top: 0; background-color: white; color: #333; }
+        
+        /* HEADER */
+        header {
+            background-color: transparent; padding: 20px 40px; 
+            display: flex; justify-content: space-between;
+            align-items: center; position: absolute;
+            width: 100%; top: 0; z-index: 1000; box-shadow: none;
+        }
+        
+        .navegacao { display: flex; gap: 20px; }
+        .logo { display: flex; color: #05C7F2; font-weight: 700; font-size: 1.5em; }
+        .logo img { height: 40px; width: 40px; display: block; } 
+
+        /* LINKS DA HEADER */
+        .botaoI {
+            text-decoration: none; color: white; display: inline-block; padding-bottom: 2px;
+            background-image: linear-gradient(to right, #05C7F2, #05C7F2); 
+            background-size: 0% 2px; background-repeat: no-repeat; background-position: left bottom;
+            transition: background-size 0.3s ease-out; margin-left: 15px; 
+        }
+        .botaoI:hover { background-size: 100% 2px; color: #F2F2F2; }
+        
+        /* --- ESTILOS DO HAMBÚRGUER --- */
+        .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 10px; z-index: 1001; }
+        .bar { 
+            display: block; width: 25px; height: 3px; margin: 5px auto; 
+            background-color: white; /* Alterado para Branco, como em Noticias.html, para contraste com header transparente */
+            transition: all 0.3s ease-in-out; 
+        }
+        /* Ajuste: a cor das barras do menu toggle só deve ser #05C7F2 quando o menu estiver fechado e o fundo for claro. 
+           Como o header é transparente, a cor branca é melhor. */
+
+        /* HERO SECTION - USANDO A NOVA VARIÁVEL DEFINIDA POR JS */
+        .hero-section {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), var(--url-hero-background); 
+            min-height: 100vh; background-size: cover; background-position: center top; 
+            background-attachment: fixed; display: flex; align-items: center; 
+            padding-left: 10%; filter: brightness(0.95); 
+        }
+
+        /* CONTEÚDO DO HERO */
+        .slide-content { color: white; text-align: left; max-width: 50%; z-index: 2; }
+        .slide-content h2 {
+            font-size: 6vw; line-height: 1; font-weight: 900; text-transform: uppercase;
+            margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); 
+        }
+
+        /* BOTÃO CTA */
+        .cta-button {
+            display: inline-block; padding: 15px 30px; border: 1px solid #05C7F2; 
+            color: white; text-decoration: none; font-size: 1em; font-weight: bold;
+            text-transform: uppercase; transition: background-color 0.3s;
+        }
+        .cta-button:hover { background-color: #5155A6; border-color: #5155A6; }
+
+        /* SEÇÃO DE INTRODUÇÃO */
+        .intro-section {
+            background-color: var(--cor-principal); color: white; padding: 100px 40px; 
+            display: flex; gap: 40px; align-items: flex-start; 
+        }
+        .intro-main-text { flex: 2; max-width: 50%; }
+        .intro-side-text { flex: 1; max-width: 50%; padding-top: 10px; }
+        .intro-main-text h2 {
+            font-size: 3em; line-height: 1.2; font-weight: 900; text-transform: uppercase;
+        }
+        .intro-side-text p { font-size: 1em; line-height: 1.6; }
+        
+        /* ------------------------------------------------ */
+        /* --- ESTILOS SEÇÃO: HISTÓRICO --- */
+        /* ------------------------------------------------ */
+        .history-section {
+            background-color: var(--cor-fundo-card); 
+            padding: 80px 40px; 
+        }
+        
+        .history-container { max-width: 1200px; margin: 0 auto; }
+        .history-container h2 {
+            text-align: center; color: var(--cor-principal); font-size: 2.5em;
+            margin-bottom: 40px; position: relative;
+        }
+        
+        .history-container h2::after {
+            content: ''; display: block; width: 80px; height: 4px;
+            background-color: var(--cor-destaque); margin: 10px auto 0; border-radius: 2px;
+        }
+
+        .history-content { display: flex; gap: 40px; }
+        .history-main { flex: 3; }
+        .history-main p {
+            font-size: 1.1em; line-height: 1.8; margin-bottom: 25px;
+            color: #444; text-align: justify;
+        }
+        
+        .history-main strong { color: var(--cor-secundaria); }
+        .history-highlights {
+            flex: 2; background-color: white; padding: 30px;
+            border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .history-highlights h3 {
+            color: var(--cor-principal); font-size: 1.5em; margin-bottom: 20px;
+            border-bottom: 2px solid var(--cor-fundo-card); padding-bottom: 10px;
+        }
+        
+        .history-highlights ul { list-style: none; padding: 0; }
+        .history-highlights li {
+            margin-bottom: 15px; padding-left: 30px; position: relative;
+            font-size: 0.95em; line-height: 1.4; color: #555;
+        }
+        
+        .history-highlights li i {
+            position: absolute; left: 0; top: 5px; color: var(--cor-destaque); font-size: 1.2em;
+        }
+        /* ------------------------------------------------ */
+        
+        /* ------------------------------------------------ */
+        /* --- ESTILOS SEÇÃO: ATIVIDADES DE ENSINO --- */
+        /* ------------------------------------------------ */
+        .teaching-section {
+            background-color: white; padding: 80px 40px; text-align: center;
+        }
+
+        .teaching-section h2 {
+            color: var(--cor-secundaria); font-size: 2.5em; margin-bottom: 50px;
+            position: relative; display: inline-block;
+        }
+
+        .teaching-section h2::after {
+            content: ''; display: block; width: 60%; height: 4px;
+            background-color: var(--cor-destaque); margin: 10px auto 0; border-radius: 2px;
+        }
+
+        .activities-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px; max-width: 1200px; margin: 0 auto;
+        }
+
+        .activity-card {
+            background-color: var(--cor-fundo-card); padding: 30px; border-radius: 10px;
+            text-align: left; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column;
+        }
+
+        .activity-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); }
+
+        .activity-card i {
+            font-size: 3em; color: var(--cor-principal); margin-bottom: 15px;
+        }
+
+        .activity-card h3 {
+            color: var(--cor-principal); font-size: 1.5em; margin-bottom: 15px;
+            border-bottom: 2px solid var(--cor-destaque); padding-bottom: 5px;
+        }
+
+        .activity-card p {
+            font-size: 0.95em; line-height: 1.6; color: #555; flex-grow: 1;
+        }
+
+        .activity-card strong { color: var(--cor-secundaria); }
+        /* ------------------------------------------------ */
+
+        /* ------------------------------------------------ */
+        /* --- ESTILOS SEÇÃO: ATIVIDADES DE PESQUISA (FUNDO VERDE) --- */
+        /* ------------------------------------------------ */
+        .research-section {
+            background-color: rgb(119, 202, 99); /* FUNDO VERDE ESCURO */
+            padding: 80px 40px; 
+            text-align: center; color: rgb(0, 0, 0);
+        }
+
+        .research-section h2 {
+            color: black; font-size: 2.5em; margin-bottom: 50px;
+            position: relative; display: inline-block;
+        }
+
+        .research-section h2::after {
+            content: ''; display: block; width: 60%; height: 4px;
+            background-color: var(--cor-principal); /* Roxo */
+            margin: 10px auto 0; border-radius: 2px;
+        }
+
+        .research-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px; max-width: 1200px; margin: 0 auto;
+        }
+
+        .research-card {
+            background-color: rgba(255, 255, 255, 0.15); 
+            padding: 30px; border-radius: 10px; text-align: left;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); transition: background-color 0.3s, transform 0.3s;
+            display: flex; flex-direction: column; color: black;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .research-card:hover { background-color: rgba(255, 255, 255, 0.3); transform: translateY(-5px); }
+
+        .research-card i {
+            font-size: 2.5em; color: black; margin-bottom: 15px;
+        }
+
+        .research-card h3 {
+            color: black; font-size: 1.3em; margin-bottom: 15px;
+            border-bottom: 2px solid var(--cor-destaque); padding-bottom: 5px; font-weight: 700;
+        }
+
+        .research-card p {
+            font-size: 0.9em; line-height: 1.6; flex-grow: 1;
+        }
+        /* ------------------------------------------------ */
+
+        /* ------------------------------------------------ */
+        /* --- ESTILOS SEÇÃO: ATIVIDADES DE EXTENSÃO --- */
+        /* ------------------------------------------------ */
+        .extension-section {
+            background-color: var(--cor-fundo-card); padding: 80px 40px; text-align: center;
+        }
+
+        .extension-section h2 {
+            color: var(--cor-principal); font-size: 2.5em; margin-bottom: 50px;
+            position: relative; display: inline-block;
+        }
+
+        .extension-section h2::after {
+            content: ''; display: block; width: 60%; height: 4px;
+            background-color: var(--cor-secundaria); margin: 10px auto 0; border-radius: 2px;
+        }
+
+        .extension-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px; max-width: 1200px; margin: 0 auto;
+        }
+        
+        .extension-card {
+            background-color: white; padding: 30px; border-radius: 10px;
+            text-align: left; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column;
+        }
+
+        .extension-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); }
+
+        .extension-card i {
+            font-size: 3em; color: var(--cor-secundaria); margin-bottom: 15px;
+        }
+
+        .extension-card h3 {
+            color: var(--cor-principal); font-size: 1.5em; margin-bottom: 15px;
+            border-bottom: 2px solid var(--cor-destaque); padding-bottom: 5px;
+        }
+
+        .extension-card p {
+            font-size: 0.95em; line-height: 1.6; color: #555; flex-grow: 1;
+        }
+        /* ------------------------------------------------ */
+        
+        /* --- ESTILOS DO CARROSSEL DE DESTAQUES --- */
+        .featured-section { width: 90%; max-width: 900px; margin: 40px auto; padding: 20px 0; }
+        .featured-section h2 { text-align: center; color: var(--cor-principal); margin-bottom: 30px; font-size: 2em; border-bottom: 3px solid var(--cor-destaque); display: inline-block; padding-bottom: 5px; width: auto; margin-left: 50%; transform: translateX(-50%); }
+        .carousel-wrapper { 
+            position: relative; 
+            overflow: hidden; 
+            /* ADICIONADO: Padding para dar espaço às setas */
+            padding: 0 40px; 
+        }
+        .highlights-container { display: flex; transition: transform 0.5s ease-in-out; width: 100%; gap: 0; padding: 0; margin-top: 0; }
+        .featured-card-slide { min-width: 100%; box-sizing: border-box; padding: 0 15px; display: flex; justify-content: center; align-items: center; }
+        .loading-fallback { min-height: 400px; display: flex; justify-content: center; align-items: center; width: 100%; background-color: var(--cor-fundo-card); border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); color: #777; text-align: center; }
+        .carousel-nav button { 
+            position: absolute; top: 50%; transform: translateY(-50%); 
+            background: rgba(81, 85, 166, 0.7); color: white; border: none; 
+            padding: 15px 10px; cursor: pointer; z-index: 50; font-size: 1.5em; 
+            transition: background 0.3s; border-radius: 5px; 
+        }
+        .carousel-nav button:hover { background: var(--cor-principal); }
+        /* AJUSTE PARA NÃO CORTAR */
+        #prev-slide { left: 0; margin-left: 0; }
+        #next-slide { right: 0; margin-right: 0; }
+        
+        .carousel-indicators { text-align: center; margin-top: 20px; }
+        .indicator { height: 10px; width: 10px; margin: 0 5px; background-color: #bbb; border-radius: 50%; display: inline-block; transition: background-color 0.6s ease; cursor: pointer; }
+        .indicator.active { background-color: var(--cor-principal); }
+        .featured-card { display: flex; flex-direction: column; min-height: 400px; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); background-color: white; transition: box-shadow 0.3s ease; width: 100%; }
+        .featured-image-container { height: 200px; background-size: cover; background-position: center; position: relative; }
+        .featured-image-container span { position: absolute; top: 10px; left: 10px; background-color: var(--cor-principal); color: white; padding: 5px 10px; border-radius: 5px; font-size: 0.8em; }
+        .featured-content { padding: 20px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; background-color: white; }
+        .featured-content h3 { color: var(--cor-principal); font-size: 1.4em; margin-bottom: 10px; line-height: 1.2; }
+        .featured-content p { color: #555; margin-bottom: 15px; flex-grow: 1; }
+        .featured-info { font-size: 0.9em; color: var(--cor-secundaria); margin-bottom: 10px; }
+        .featured-info i { margin-right: 5px; color: var(--cor-destaque); }
+        .featured-button { background-color: var(--cor-secundaria); color: white; padding: 10px 15px; text-align: center; text-decoration: none; border-radius: 5px; font-weight: bold; transition: background-color 0.3s; display: block; width: 100%; }
+        .featured-button:hover { background-color: #029443; }
+        .btn-sem-link { cursor: default; opacity: 0.8; pointer-events: none; background-color: #9e9e9e !important; }
+
+        /* ------------------------------------------------ */
+        /* --- FOOTER ESTILOS (CINZA) --- */
+        /* ------------------------------------------------ */
+        .site-footer {
+            background-color: #333; /* Cinza escuro */
+            color: #bbb; /* Texto cinza claro */
+            padding: 60px 40px 20px;
+            font-size: 0.9em;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .footer-column {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 20px;
+        }
+
+        .footer-column h3 {
+            color: rgb(255, 255, 255); /* Ciano/Azul claro (mantido) */
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--cor-secundaria); /* Verde (mantido) */
+            padding-bottom: 5px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .footer-logo img {
+            height: 50px;
+            width: 50px;
+            margin-right: 10px;
+        }
+
+        .footer-logo span {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+        }
+
+        .footer-column p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .footer-column a {
+            color: #bbb; /* Links em cinza claro */
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+            transition: color 0.2s;
+        }
+
+        .footer-column a:hover {
+            color: var(--cor-secundaria); /* Verde (mantido) */
+        }
+
+        .footer-column ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        /* ÍCONES SOCIAIS */
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            font-size: 1.5em;
+            color: white;
+            transition: color 0.2s;
+        }
+
+        .social-links a:hover {
+            color: white;
+        }
+
+        /* COPYRIGHT */
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 40px;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 0.8em;
+            color: #999; /* Texto de copyright um pouco mais escuro */
+        }
+        
+        /* --- MEDIA QUERY PARA RESPONSIVIDADE --- */
+        @media (max-width: 768px) {
+            
+            header { padding: 15px 20px; }
+            .menu-toggle { display: block; }
+            /* A LINHA .navegacao { display: none; } FOI REMOVIDA PARA EVITAR CONFLITO COM O BLUR */
+            
+            /* --- MENU RESPONSIVO COM TRANSPARÊNCIA E DESFOQUE --- */
+            .navegacao.nav-menu { 
+                /* ALTERADO: Fundo transparente e escuro para leitura */
+                background-color: rgba(0, 0, 0, 0.7); 
+                /* NOVO: Efeito de desfoque no fundo */
+                backdrop-filter: blur(10px); 
+                -webkit-backdrop-filter: blur(10px); 
+
+                display: flex; flex-direction: column; position: fixed; 
+                top: 0; right: 0; width: 100%; height: 100vh; padding-top: 80px; 
+                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5); 
+                transform: translateX(100%); 
+                transition: transform 0.3s ease-in-out; 
+            }
+            .navegacao.nav-menu.open { transform: translateX(0); }
+            .navegacao.nav-menu .botaoI { 
+                margin: 0; padding: 15px 20px; text-align: center; width: 100%; 
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: white; 
+            }
+            .menu-toggle.open .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); background-color: white; }
+            .menu-toggle.open .bar:nth-child(2) { opacity: 0; }
+            .menu-toggle.open .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); background-color: white; }
+            /* ----------------------------------------------------------------- */
+
+            /* HERO SECTION RESPONSIVO */
+            .hero-section { padding-left: 5%; }
+            .slide-content { max-width: 90%; }
+            .slide-content h2 { font-size: 10vw; margin-bottom: 20px; }
+
+            /* SEÇÕES RESPONSIVAS */
+            .intro-section { flex-direction: column; padding: 50px 20px; }
+            .intro-main-text, .intro-side-text { max-width: 100%; margin-bottom: 20px; flex: none; }
+            .intro-main-text h2 { font-size: 1.8em; }
+            
+            .history-section, .teaching-section, .research-section, .extension-section { padding: 50px 20px; }
+            .history-content { flex-direction: column; gap: 30px; }
+            .history-main, .history-highlights { flex: none; width: 100%; }
+            .activities-grid, .research-grid, .extension-grid { grid-template-columns: 1fr; }
+            
+            /* Carrossel Responsivo */
+            .carousel-wrapper { 
+                /* AJUSTADO: Padding para as setas não serem cortadas no mobile */
+                padding: 0 10px; 
+            }
+            .carousel-nav button { padding: 10px 5px; margin: 0; }
+            #prev-slide { left: 0; }
+            #next-slide { right: 0; }
+            
+            /* RESPONSIVIDADE FOOTER */
+            .footer-container {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .footer-column {
+                min-width: 100%;
+                margin-bottom: 30px;
+            }
+
+            .footer-column ul, .footer-column p {
+                text-align: center;
+            }
+            
+            .footer-logo {
+                justify-content: center;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header> 
+        <div class="logo">
+            <img src="imagens/iconEx.png" alt="Logo pet">
+        </div>
+
+        <button class="menu-toggle" aria-label="Abrir Menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+        
+        <nav class="navegacao nav-menu">
+            <a href="index.html" class="botaoI">Inicio</a>
+            <a href="Noticias.html" class="botaoI">Notícias</a> 
+            <a href="eventos.html" class="botaoI">Eventos</a>
+            <a href="projetos.html" class="botaoI">Projetos</a>
+        </nav>
+    </header>
+    
+    <section class="hero-section">
+        <div class="slide-content">
+            <h2>PET BIOLOGIA: ensino, pesquisa e extensão</h2> 
+            <a href="#intro-section" class="cta-button">SABER MAIS</a>
+        </div>
+    </section>
+    
+    <section class="featured-section">
+        <h2>Destaques do PET</h2>
+        
+        <div class="carousel-wrapper">
+            <div class="highlights-container" id="highlights-container">
+                <div id="featured-news-container" class="featured-card-slide loading-fallback">
+                    <p>Carregando Notícia...</p>
+                </div>
+                <div id="featured-event-container" class="featured-card-slide loading-fallback">
+                    <p>Carregando Evento...</p>
+                </div>
+                <div id="featured-project-container" class="featured-card-slide loading-fallback">
+                    <p>Carregando Projeto...</p>
+                </div>
+            </div>
+
+            <div class="carousel-nav">
+                <button id="prev-slide"><i class="fas fa-chevron-left"></i></button>
+                <button id="next-slide"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+        
+        <div class="carousel-indicators" id="carousel-indicators">
+        </div>
+    </section>
+    
+    <section class="intro-section" id="intro-section">
+        <div class="intro-main-text">
+            <h2>SOMOS O GRUPO DE BIOLOGIA DA UFPA DEDICADO À EXCELÊNCIA ACADÊMICA.</h2>
+        </div>
+        <div class="intro-side-text">
+            <p>O Programa de Educação Tutorial (PET) Biologia da UFPA é um espaço para aprendizado e desenvolvimento. Conheça nosso legado e as ações nas três dimensões da universidade.</p>
+        </div>
+    </section>
+    
+    <section class="history-section" id="history-section">
+        <div class="history-container">
+            <h2>Nossa História e Legado</h2>
+
+            <div class="history-content">
+                <div class="history-main">
+                    <p>
+                        O PET Biologia UFPA foi criado em outubro de 2008, com a Profa. Dra. Maria Lúcia Harada como sua primeira tutora. Desde dezembro de 2009, o grupo é tutorado pelo Prof. Dr. Luiz Carlos Santana da Silva, que é o tutor atual.
+                    </p>
+                    <p>
+                        Sua criação foi motivada pela busca em oferecer ao graduando de Biologia (Licenciatura e Bacharelado) uma oportunidade de adicionar ferramentas de Ensino, Extensão e Pesquisa, que complementam a formação em sala de aula.
+                    </p>
+                    <p>
+                        Nestes anos de história, o PET Biologia se consolidou como um ponto de referência no ICB, com um forte legado na formação acadêmica. Cerca de 50 petianos já passaram pelo grupo, com um alto índice de sucesso em pós-graduação: 
+                        <strong style="color:var(--cor-destaque);">8</strong> no mestrado, <strong style="color:var(--cor-destaque);">10</strong> já mestres, <strong style="color:var(--cor-destaque);">5</strong> no doutorado e <strong style="color:var(--cor-destaque);">3</strong> já doutores.
+                    </p>
+                    <p>
+                        Todas essas atividades estimulam o petiano a buscar uma visão educacional, extensionista e científica, incentivando-o a contribuir social, cultural e politicamente em sua formação como biólogo e para o meio que o cerca.
+                    </p>
+                </div>
+
+                <div class="history-highlights">
+                    <h3>Principais Realizações</h3>
+                    <ul>
+                        <li><i class="fa-solid fa-calendar-alt"></i> Organização de várias edições do evento "Simpósio de Meio Ambiente e Sustentabilidade da Amazônia".</li>
+                        <li><i class="fa-solid fa-chalkboard-user"></i> Participação e organização do Programa Universidade Aberta (PUA) desde 2012.</li>
+                        <li><i class="fa-solid fa-microphone-alt"></i> Realização das palestras "Quarta do Biólogo" desde 2010 (mais de 150 edições).</li>
+                        <li><i class="fa-solid fa-graduation-cap"></i> Elaboração de cinco trabalhos de conclusão de curso e apresentação de 50 resumos em eventos.</li>
+                        <li><i class="fa-solid fa-map-marked-alt"></i> Aprovação e execução dos projetos PROEXT/MEC e PAPIM/PROEG/UFPA.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="teaching-section" id="teaching-section">
+        <h2>Nossas Ações em Ensino</h2>
+
+        <div class="activities-grid">
+            
+            <div class="activity-card">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <h3>PET Biologia na Escola (PET NA ESCOLA)</h3>
+                <p>
+                    Desde 2011, promovemos a interação com alunos do ensino básico para facilitar o ensino de Ciências Biológicas e temas transversais. Nosso foco é desmistificar a ciência e contextualizar a Biologia com a realidade dos alunos, combatendo metodologias desatualizadas.
+                </p>
+            </div>
+            
+            <div class="activity-card">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                <h3>Projeto de Monitoria Voluntária (PET Mov)</h3>
+                <p>
+                    Estratégia pedagógica que auxilia no ensino de graduação regular. É crucial para os futuros licenciados, oferecendo contato prévio com a prática docente, aprofundamento científico e atualização do saber técnico, qualificando o monitor para futuras atividades.
+                </p>
+            </div>
+            
+            <div class="activity-card">
+                <i class="fa-solid fa-people-arrows"></i>
+                <h3>Projeto Universidade Aberta (PUA)</h3>
+                <p>
+                    Em parceria com o PET-Física, preparamos e capacitamos alunos de vulnerabilidade socioeconômica para exames de entrada em universidades, com uma taxa de aprovação notável, variando entre 40% a 60%. Um verdadeiro exemplo de formação cidadã e inclusão social.
+                </p>
+            </div>
+            
+        </div>
+    </section>
+
+    <section class="research-section" id="research-section">
+        <h2>Pesquisa e Desenvolvimento Científico</h2>
+
+        <div class="research-grid">
+            
+            <div class="research-card">
+                <i class="fa-solid fa-microscope"></i>
+                <h3>Intercâmbio e Preparação Científica</h3>
+                <p>
+                    Participação na Jornada de Iniciação Científica dos Grupos PET (JICPET) para troca de experiências. Internamente, realizamos Seminários Internos sobre temas relevantes de Biologia, que servem como preparação fundamental para TCCs, projetos e aprimoramento do fazer docente.
+                </p>
+            </div>
+            
+            <div class="research-card">
+                <i class="fa-solid fa-clock"></i>
+                <h3>Cronobiologia e Ensino-Aprendizagem</h3>
+                <p>
+                    Projeto que estuda a Alocação do Ciclo Vigília-Sono dos alunos do ICB. O objetivo é definir perfis (matutinos/vespertinos) e buscar mecanismos educacionais que possam ajudar os indivíduos na relação ensino-aprendizagem, adaptando-se às necessidades cronobiológicas.
+                </p>
+            </div>
+            
+            <div class="research-card">
+                <i class="fa-solid fa-map-location-dot"></i>
+                <h3>Estudos Ambientais e Capacitação</h3>
+                <p>
+                    Desenvolvemos pesquisas como a Quantificação do Lixo nas Praias de Mosqueiro, essencial para identificar problemas ambientais. Complementarmente, promovemos Visitas Técnicas a instituições (IBAMA, Mangal das Garças) que capacitam os discentes, mostrando possíveis campos de atuação do biólogo.
+                </p>
+            </div>
+            
+            <div class="research-card">
+                <i class="fa-solid fa-sitemap"></i>
+                <h3>Integração e Fortalecimento do PET</h3>
+                <p>
+                    Participação ativa no ENAPET (Nacional) e no FORPET (Paraense). Estes eventos são cruciais para a integração com outros grupos PET, apresentação de trabalhos e discussão de deliberações que visam o fortalecimento e aprimoramento da política norteadora do Programa de Educação Tutorial.
+                </p>
+            </div>
+            
+        </div>
+    </section>
+
+    <section class="extension-section" id="extension-section">
+        <h2>Extensão e Impacto Social</h2>
+
+        <div class="extension-grid">
+            
+            <div class="extension-card">
+                <i class="fa-solid fa-handshake-angle"></i>
+                <h3>Bio e Ciência na Praça (Divulgação Científica)</h3>
+                <p>
+                    Iniciativa em parceria com o PET-Física, que leva estandes com microscópios para praças públicas. O objetivo é socializar o conhecimento e aproximar a ciência do cotidiano das pessoas, desenvolvendo a capacidade dos graduandos em simplificar e contextualizar o saber.
+                </p>
+            </div>
+            
+            <div class="extension-card">
+                <i class="fa-solid fa-leaf"></i>
+                <h3>Capacitação e Sustentabilidade Amazônica</h3>
+                <p>
+                    Realizamos a Quarta do Biólogo para atualizar os estudantes sobre as áreas de atuação do biólogo. Além disso, organizamos o VI Simpósio de Meio Ambiente e Sustentabilidade na Amazônia (SMASA), um evento que estimula discussões multidisciplinares sobre a realidade da Região Norte.
+                </p>
+            </div>
+            
+            <div class="extension-card">
+                <i class="fa-solid fa-person-walking-with-cane"></i>
+                <h3>Inclusão e Orientação Profissional</h3>
+                <p>
+                    O grupo atua em prol de Pessoas com Deficiências Intelectuais e/ou Motoras, inserindo o petiano em um contexto social participativo. Promovemos também a Feira Vocacional, um espaço de diálogo para orientação profissional e desmistificação da universidade para pré-vestibulandos.
+                </p>
+            </div>
+            
+            <div class="extension-card">
+                <i class="fa-solid fa-user-friends"></i>
+                <h3>Integração e Gestão de Grupo</h3>
+                <p>
+                    A participação nas Reuniões Semanais e na Executiva dos Grupos PET garante a eficiência do grupo e o diálogo sobre a política do PET no Pará. Também atuamos ativamente na Semana do Calouro de Biologia para socializar a tríade universitária (Ensino, Pesquisa e Extensão) aos recém-ingressados.
+                </p>
+            </div>
+            
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="footer-container">
+            
+            <div class="footer-column">
+                <div class="footer-logo">
+                    <img src="imagens/iconEx.png" alt="Logo PET">
+                    <span>PET Biologia UFPA</span>
+                </div>
+                <p>
+                    Programa de Educação Tutorial de Biologia da Universidade Federal do Pará.
+                    Desenvolvendo ensino, pesquisa e extensão na Amazônia.
+                </p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/petbiologiaufpa/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/@petbiologiaufpa8405" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h3>Navegação</h3>
+                <ul>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="#history-section">Nossa História</a></li>
+                    <li><a href="#teaching-section">Ensino</a></li>
+                    <li><a href="#research-section">Pesquisa</a></li>
+                    <li><a href="#extension-section">Extensão</a></li>
+                    <li><a href="eventos.html">Eventos</a></li>
+                    <li><a href="projetos.html">Projetos</a></li>
+                    <li><a href="Noticias.html">Noticias</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Fale Conosco</h3>
+                <p><i class="fas fa-envelope"></i> petbioufpa@gmail.com</p>
+                <p><i class="fas fa-map-marker-alt"></i> ICB/UFPA, Campus Guamá</p>
+                <p>Rua Augusto Corrêa, Belém/PA.</p>
+            </div>
+            
+        </div>
+
+        <div class="footer-bottom">
+            &copy; 2024 PET Biologia UFPA. Todos os direitos reservados.
+            <br>
+            Desenvolvido por: petbiologia
+        </div>
+    </footer>
+
+
+    <script>
+        // 🚨 CONFIGURAÇÃO DE URLS 🚨
+        // Substitua estas URLs pelos links reais das suas planilhas/APIs
+        const API_URLS = {
+            noticias: 'https://script.google.com/macros/s/AKfycbw7KuSdSKzrOJgtdrTZlMP6g0BZDGeiLltKlGOV_bjn_lMW5W8SXuhYNlBqwjTKM--j/exec', 
+            eventos: 'https://script.google.com/macros/s/AKfycbxN6WVtZOu6qspcmluK0XAYTAtd6e82tlJpPvzkoDZvqU-THCDUK4PtsPMluJ4Wsf2tHg/exec', 
+            projetos: 'https://script.google.com/macros/s/AKfycbw4NG7wVPAqV-epuYjdZ7FtDz6qP16MEQr2UV5NjF_KkoT_yad40eEKT8bEm6y51dqE/exec' 
+        };
+        
+        // NOVO: URL para a Planilha de Configuração (Hero Background)
+        // **COLE AQUI O LINK DO GOOGLE SCRIPT QUE VOCÊ PUBLICOU NA ETAPA 1C**
+        const CONFIG_URL = 'https://script.google.com/macros/s/AKfycbwUtAkw7o-3D4JuYV83ojqGfllliYvf-CI_BkGAKsUaRiMc39IfcUKW_kWh10xsV_mD/exec'; 
+        // --------------------------------------------------------------------------
+
+        const containers = {
+            noticias: document.getElementById('featured-news-container'),
+            eventos: document.getElementById('featured-event-container'),
+            projetos: document.getElementById('featured-project-container')
+        };
+        
+        // --- VARIÁVEIS DO CARROSSEL ---
+        let currentSlide = 0;
+        const totalSlides = 3;
+        const highlightsContainer = document.getElementById('highlights-container');
+        const indicatorsContainer = document.getElementById('carousel-indicators');
+
+        // --- FUNÇÃO PARA PEGAR IMAGEM DE FUNDO DA API DE CONFIGURAÇÃO (AGORA CORRIGIDA) ---
+        async function fetchHeroBackground() {
+            // URL de fallback (padrão) caso a API falhe ou a URL esteja vazia
+            const defaultImageUrl = 'url(\'imagens/fundo pet.png\')'; 
+            
+            // 1. Aplica o fundo padrão imediatamente
+            document.documentElement.style.setProperty('--url-hero-background', defaultImageUrl);
+
+            // Aviso para o console caso o usuário ainda use a URL de placeholder
+            if (CONFIG_URL === 'https://script.google.com/macros/s/AKfycbwUtAkw7o-3D4JuYV83ojqGfllliYvf-CI_BkGAKsUaRiMc39IfcUKW_kWh10xsV_mD/exec') {
+                 console.warn("CONFIG_URL ainda é o placeholder. A URL de fundo padrão foi aplicada, mas tentaremos buscar a nova.");
+            }
+            
+            try {
+                // 2. Tenta buscar o JSON da sua API
+                const response = await fetch(CONFIG_URL);
+                if (!response.ok) throw new Error(`Erro ao buscar config: ${response.status}`);
+                
+                const data = await response.json();
+                
+                const imageUrl = data.heroImageUrl; 
+
+                if (imageUrl && imageUrl.toString().trim() !== '' && imageUrl.startsWith('http')) {
+                    // 3. Se a busca for bem-sucedida, sobrescreve o fundo padrão com a URL da API
+                    document.documentElement.style.setProperty(
+                        '--url-hero-background', 
+                        `url('${imageUrl}')`
+                    );
+                } else {
+                    console.warn("URL de imagem inválida ou vazia na API. Mantendo imagem padrão.");
+                }
+
+            } catch (error) {
+                console.error("Erro no fetch da Imagem de Fundo. Mantendo imagem padrão.", error);
+                // Se der erro, o fundo padrão (já aplicado) será mantido.
+            }
+        }
+        // ---------------------------------------------------------------------------------
+
+
+        // --- LÓGICA DE NAVEGAÇÃO DO CARROSSEL ---
+        function updateCarousel(index) {
+            currentSlide = (index + totalSlides) % totalSlides; 
+            const offset = -currentSlide * 100;
+            highlightsContainer.style.transform = `translateX(${offset}%)`;
+
+            document.querySelectorAll('.indicator').forEach((indicator, idx) => {
+                indicator.classList.toggle('active', idx === currentSlide);
+            });
+        }
+        
+        function navigate(direction) {
+            updateCarousel(currentSlide + direction);
+        }
+
+        function createIndicators() {
+            indicatorsContainer.innerHTML = '';
+            for (let i = 0; i < totalSlides; i++) {
+                const indicator = document.createElement('span');
+                indicator.classList.add('indicator');
+                indicator.addEventListener('click', () => updateCarousel(i));
+                indicatorsContainer.appendChild(indicator);
+            }
+            updateCarousel(0); 
+        }
+
+        // --- FUNÇÕES DE BUSCA E RENDERIZAÇÃO DE DADOS ---
+
+        async function fetchAndRenderFeatured(type) {
+            const container = containers[type];
+            const url = API_URLS[type];
+            const fallbackImage = 'https://i.imgur.com/83p1X1Y.jpeg'; 
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Erro: ${response.status}`);
+                
+                const data = await response.json();
+                
+                const items = Array.isArray(data) ? data : (data.página1 || []); 
+                
+                const featuredItem = items.find(item => {
+                    const isFeatured = item.Destaque || item.destaque;
+                    return isFeatured && isFeatured.toString().toUpperCase().trim() === 'SIM';
+                });
+
+                container.classList.remove('loading-fallback');
+
+                if (featuredItem) {
+                    renderFeaturedCard(container, featuredItem, type, fallbackImage);
+                } else {
+                    container.innerHTML = `<p>
+                        Nenhum ${type.charAt(0).toUpperCase() + type.slice(1)} em destaque no momento.
+                    </p>`;
+                    container.classList.add('loading-fallback');
+                }
+
+            } catch (error) {
+                console.error(`Erro ao buscar ${type} em destaque:`, error);
+                container.innerHTML = `<p>
+                    Falha ao carregar o ${type}. (Verifique suas URLs ou a rede).
+                </p>`;
+                container.classList.add('loading-fallback');
+            }
+        }
+        
+        function renderFeaturedCard(container, item, type, fallbackImage) {
+            
+            // --- 1. LÓGICA DO BOTÃO E LINK ---
+            let linkKey; 
+            if (type === 'noticias') linkKey = 'linkNoticia'; 
+            else if (type === 'eventos') linkKey = 'linkInscricao'; 
+            /* AJUSTE PARA PROJETOS: Garante que 'linkPdf' seja o link do projeto */
+            else linkKey = 'linkPdf'; 
+            
+            const buttonLink = item[linkKey] && item[linkKey].toString().trim() !== '' ? item[linkKey] : '#';
+            const linkAtivo = buttonLink !== '#';
+            
+            let defaultText;
+            if (type === 'noticias') defaultText = 'Ver Notícia';
+            else if (type === 'eventos') defaultText = 'Inscrever-se/Participar';
+            else defaultText = 'Ver Projeto'; // Texto específico para Projetos
+
+            const buttonText = item.textoBotao && item.textoBotao.toString().trim() !== '' && linkAtivo ? item.textoBotao : 
+                                 (linkAtivo ? defaultText : 'Link em Breve');
+
+            const buttonClass = linkAtivo ? 'featured-button' : 'featured-button btn-sem-link';
+            const imageUrl = item.imagemUrl && item.imagemUrl.toString().trim() !== '' ? item.imagemUrl : fallbackImage;
+            
+            // --- 2. Ícones e Rótulos ---
+            let icon, label;
+            if (type === 'noticias') { icon = 'fa-newspaper'; label = 'NOTÍCIA'; }
+            else if (type === 'eventos') { icon = 'fa-calendar-alt'; label = 'EVENTO'; }
+            else { icon = 'fa-flask'; label = 'PROJETO'; }
+
+            // --- 3. CONTEÚDO DE INFORMAÇÃO ---
+            let infoContent;
+            
+            const rawDate = item.data;
+            let formattedDate = 'Sem Data';
+            if (rawDate) {
+                try {
+                    const dateObj = new Date(rawDate);
+                    formattedDate = dateObj.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                } catch(e) {
+                    formattedDate = rawDate.toString().split('T')[0];
+                }
+            }
+
+
+            if (type === 'eventos') {
+                infoContent = `
+                    <i class="fa-solid fa-calendar-alt"></i> ${item.data} 
+                    | <i class="fa-solid fa-clock"></i> ${item.hora || 'Sem Hora'}
+                    ${item.local ? ` | <i class="fa-solid fa-location-dot"></i> ${item.local}` : ''}
+                `;
+            } else if (type === 'projetos') {
+                infoContent = `
+                    <i class="fa-solid fa-users"></i> ${item.autores || 'Sem Autor'} 
+                    | <i class="fa-solid fa-check-circle"></i> ${item.status || 'Em Andamento'}
+                `;
+            } else { // Notícias
+                 infoContent = `
+                    <i class="fa-solid fa-calendar-alt"></i> ${item.data} 
+                    ${item.fonte ? ` | <i class="fa-solid fa-globe"></i> ${item.fonte}` : ''}
+                `;
+            }
+            
+            // --- 4. RESUMO ---
+            let resumoTexto = (type === 'eventos' ? item.descricao : item.resumo) || '';
+            if (resumoTexto.toString().trim() === '') {
+                resumoTexto = type === 'projetos' ? 'Descrição do projeto não disponível.' : 'Resumo/descrição não disponível.';
+            }
+
+            // Limita o resumo para manter a estética
+            if (resumoTexto.length > 200) {
+                 resumoTexto = resumoTexto.substring(0, 200) + '...';
+            }
+
+
+            const cardHtml = `
+                <div class="featured-card">
+                    <div class="featured-image-container" style="background-image: url('${imageUrl}');">
+                        <span>
+                            <i class="fa-solid ${icon}"></i> ${label} EM DESTAQUE
+                        </span>
+                    </div>
+                    <div class="featured-content">
+                        <div>
+                            <div class="featured-info">
+                                ${infoContent}
+                            </div>
+                            <h3>${item.titulo}</h3>
+                            <p>${resumoTexto}</p>
+                        </div>
+                        <a href="${buttonLink}" target="_blank" class="${buttonClass}">${buttonText}</a>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = cardHtml;
+        }
+
+        // --- INICIALIZAÇÃO ---
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Define a imagem de fundo dinamicamente (COM CORREÇÃO)
+            fetchHeroBackground(); 
+            
+            initMenuToggle();
+            
+            // 2. Cria os indicadores do carrossel antes de carregar os dados
+            createIndicators();
+            
+            // 3. Adiciona os listeners de navegação
+            document.getElementById('prev-slide').addEventListener('click', () => navigate(-1));
+            document.getElementById('next-slide').addEventListener('click', () => navigate(1));
+            
+            // 4. Inicia o carregamento dos três destaques
+            fetchAndRenderFeatured('noticias');
+            fetchAndRenderFeatured('eventos');
+            fetchAndRenderFeatured('projetos');
+            
+            // Define um intervalo para o carrossel automático (opcional, 5 segundos)
+            setInterval(() => navigate(1), 10000); 
+        });
+
+        function initMenuToggle() {
+            const toggleButton = document.querySelector('.menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            if (toggleButton && navMenu) {
+                toggleButton.addEventListener('click', () => {
+                    navMenu.classList.toggle('open');
+                    toggleButton.classList.toggle('open');
+                });
+                document.querySelectorAll('.nav-menu a').forEach(item => {
+                    item.addEventListener('click', () => {
+                        if (navMenu.classList.contains('open')) {
+                            navMenu.classList.remove('open');
+                            toggleButton.classList.remove('open');
+                        }
+                    });
+                });
+            }
+        }
+    </script>
+</body>
+</html>
